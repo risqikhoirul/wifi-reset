@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Web Management</title>
+    <style>
+        body {
+            background-color: #E5E5E5;
+            color: #000000;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            margin: 30px;
+        }
+        .container {
+            border: 1px solid #666666;
+            width: 550px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+        }
+        .header {
+            background-color: #003399;
+            color: #FFFFFF;
+            font-weight: bold;
+            padding: 6px 10px;
+            font-size: 13px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .warning-text {
+            color: #CC0000;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .form-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .form-table td {
+            padding: 5px 0;
+            font-size: 12px;
+        }
+        .form-table td:first-child {
+            width: 150px;
+        }
+        input[type="text"] {
+            border: 1px inset #AAAAAA;
+            padding: 3px;
+            width: 200px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+        }
+        .btn-classic {
+            background-color: #DDDDDD;
+            border: 2px outset #FFFFFF;
+            padding: 4px 20px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #000;
+        }
+        .btn-classic:active {
+            border-style: inset;
+        }
+        .separator {
+            border-top: 1px solid #CCCCCC;
+            margin: 15px 0;
+        }
+        
+        /* Progress Bar Styles */
+        .progress-border {
+            border: 1px inset #888888;
+            width: 100%;
+            height: 16px;
+            background-color: #F0F0F0;
+            margin-top: 15px;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #0000A0;
+        }
+        #pct {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 5px;
+            color: #333333;
+        }
+        #status-text {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">System Tool - Reboot & Reset</div>
+        
+        <div class="content" id="main-content">
+            <div class="warning-text">
+                Warning: Resetting the device will disconnect all current wireless and wired users.
+            </div>
+            
+            <table class="form-table">
+                <tr>
+                    <td>Target IP Address:</td>
+                    <td><input type="text" value="192.168.1.1" id="ip-address"></td>
+                </tr>
+            </table>
+            
+            <div class="separator"></div>
+            
+            <button onclick="startReset()" class="btn-classic">Reset Device</button>
+        </div>
+
+        <div class="content" id="progress-content" style="display:none;">
+            <p id="status-text">Restarting system... Please do not unplug the power.</p>
+            
+            <div class="progress-border">
+                <div class="progress-bar" id="pbar"></div>
+            </div>
+            <div id="pct">0%</div>
+            
+            <div class="separator"></div>
+            <button class="btn-classic" disabled id="btn-back" onclick="location.reload()">Back</button>
+        </div>
+    </div>
+
+    <script>
+        function startReset() {
+            var ip = document.getElementById('ip-address').value;
+            
+            if(!ip) {
+                alert("Error code 4001: IP Address cannot be empty.");
+                return;
+            }
+            
+            // Konfirmasi popup khas sistem lawas
+            if(!confirm("Are you sure you want to restart the router at " + ip + "?\nAll configurations will be temporarily suspended.")) {
+                return;
+            }
+
+            // Pindah tampilan
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('progress-content').style.display = 'block';
+
+            var bar = document.getElementById('pbar');
+            var pctText = document.getElementById('pct');
+            var statusText = document.getElementById('status-text');
+            var btnBack = document.getElementById('btn-back');
+            var width = 0;
+
+            // Animasi loading buatan lambat & acak (mirip proses firmware router asli)
+            var interval = setInterval(function() {
+                // Menambah persenan secara acak antara 1 sampai 6
+                var step = Math.floor(Math.random() * 6) + 1;
+                width += step;
+
+                if(width >= 100) {
+                    width = 100;
+                    clearInterval(interval);
+                    statusText.innerHTML = "System successfully reset. Connection established.";
+                    statusText.style.color = "#006600";
+                    statusText.style.fontWeight = "bold";
+                    btnBack.disabled = false;
+                }
+
+                bar.style.width = width + '%';
+                pctText.innerHTML = width + '%';
+            }, 600); // Berjalan setiap 600ms
+        }
+    </script>
+
+</body>
+</html>
